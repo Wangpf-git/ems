@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../css/style1.css" rel="stylesheet">
+    <style>
+        form{
+            width:270px;
+        }
+        input{
+            width: 64%;
+            background: #eee;
+        }
+        input:focus{
+            background: #fff;
+        }
+        form{
+            padding: 0 12px 12px;
+        }
+        label{
+            display: block;
+            padding-bottom:12px;
+        }
+        .label-text{
+            width: 36%;
+            float: left;
+        }
+        #img-show{
+            width: 135px;
+            height: 135px;
+            display: block;
+            margin: 0 auto;
+            object-fit: cover;
+        }
+    </style>
+    <script>
+        function imgfileChange() {
+            var img_show = document.getElementById("img-show");
+            var imgfile = document.getElementById("imgfile");
+
+            var freader = new FileReader();
+            freader.readAsDataURL(imgfile.files[0]);
+            freader.onload = function (e) {
+                img_show.src = e.target.result;
+            };
+        }
+    </script>
+</head>
+<body>
+<div id="app">
+    <div id="wrap">
+        <div id="header">
+            <div style="float: right;padding-top: 24px">2009/11/20</div>
+            <h1>管理系统</h1>
+        </div>
+        <div id="header-bar"></div>
+        <div id="content" style="height: 480px">
+            <h2>修改员工</h2>
+            <form action="emplist.html" method="post">
+                <label>
+                    <div class="label-text">姓&emsp;&emsp;名：</div>
+                    <input type="text" v-model="emp.name">
+                </label>
+                <label>
+                    <div class="label-text">图片：</div>
+                    <div style="text-align: center;padding-left: 36%">
+                        <img :src="src" alt="" id="img-show">
+                        <input id="imgfile" onchange="imgfileChange()" ref="myFile" style="display: none" type="file">
+                    </div>
+                </label>
+                <label>
+                    <div class="label-text">工资：</div>
+                    <input type="text" v-model="emp.salary">
+                </label>
+                <label>
+                    <div class="label-text">年龄：</div>
+                    <input type="text" v-model="emp.age">
+                </label>
+                <!--<label>
+                    <div class="label-text">淡季门票：</div>
+                    <input type="text" v-model="emp.dimticket">
+                </label>
+                <label>
+                    <div class="label-text">景点描述：</div>
+                    <input type="text" v-model="emp.placedes">
+                </label>-->
+                <label>
+                    <div class="label-text">所属部门：</div>
+                    <select v-model="emp.groupid">
+                        <option  :value="pro.id" v-for="(pro,index) in groups" v-text="pro.name"></option>
+                    </select>
+                </label>
+                <button @click="updateEmp" type="button">提 交</button>&emsp;
+                <a :href="'emplist.html?id='+ emp.groupid">返回</a>
+            </form>
+        </div>
+        <div id="footer">
+            ABC@126.com
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script src="../js/vue.js"></script>
+<script src="../js/axios.min.js"></script>
+<script>
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            id:"",
+            emp:{},
+            groups:[],
+            src:"",
+        },
+        methods:{
+            updateEmp(){
+                console.log(this.emp);
+                let myFile = this.$refs.myFile;
+                let files = myFile.files;
+                let file  = files[0];
+                let formData = new FormData();
+                formData.append("pic",file);
+                formData.append("name",this.emp.name);
+                formData.append("salary",this.emp.salary);
+                formData.append("age",this.emp.age);
+                formData.append("groupid",this.emp.groupid);
+                //axios
+                axios({
+                    method:'post',
+                    url:'http://localhost:8989/ems_vue/emp/update',
+                    data:formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }).then((res)=>{
+                    console.log(res.data);
+                if(res.data.state){
+                    alert(res.data.msg+",点击确定回到员工列表");
+                    location.href="./emplist.html?id="+this.emp.groupid;
+                }else{
+                    alert(res.data.msg+",点击确定回到员工列表");
+                }
+            })
+            },
+            findOneEmp(){//根据id查询景点信息
+                _this =this;
+                axios.get("http://localhost:8989/ems_vue/emp/findOne?id="+this.id).then((res)=>{
+                    _this.emp = res.data;
+                _this.src = "data:image/png;base64,"+_this.emp.path;
+            })
+            },
+            findAllGroups(){
+                _this = this;
+                axios.get("http://localhost:8989/ems_vue/group/findByPage?rows=35").then((res)=>{
+                    console.log(res.data.groups);
+                _this.groups = res.data.groups;
+            })
+            }
+        },
+        created(){
+            let id = location.href.substring(location.href.indexOf("=")+1);
+            this.id = id;
+            this.findOneEmp();
+            this.findAllGroups();
+        }
+    })
+
+</script>

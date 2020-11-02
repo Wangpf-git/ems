@@ -1,0 +1,54 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.wpf.dao.EmpDAO">
+
+
+
+    <!--根据省份id查询所有景点信息并排序-->
+
+    <select id="findByGroupIdPage" resultType="Emp">
+        select
+            id,	name,	path,	salary,	age,	groupid
+        from t_emp
+        where groupid = #{groupId}
+        order by salary
+                 limit #{start},#{rows}
+    </select>
+
+    <!--根据省份id查询当前省份所有景点个数-->
+    <select id="findByGroupIdCounts" parameterType="String" resultType="Integer">
+        select count(id) from  t_emp where groupid=#{groupId}
+    </select>
+
+
+    <!--保存place-->
+    <insert id="save" parameterType="emp" useGeneratedKeys="true" keyProperty="id">
+        insert into t_emp values (#{id},#{name},#{path},#{salary},#{age},#{groupid})
+    </insert>
+
+
+    <!--根据id查询景点信息-->
+    <select id="findOne" parameterType="String" resultType="emp">
+        select
+            id,	name,	path,	salary,	age,	groupid
+        from t_emp
+        where id=#{id}
+    </select>
+
+    <!--删除景点信息方法-->
+    <delete id="delete" parameterType="String">
+        delete from t_emp where id = #{id}
+    </delete>
+
+    <!--修改经典信息-->
+    <update  id="update" parameterType="Emp">
+        update t_emp set name=#{name},
+                         path=#{path},
+                         salary=#{salary},
+                         age=#{age},
+                         groupid=#{groupid}
+        where id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,45 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.wpf.dao.GroupDAO">
+
+
+
+    <!--分页查询所有-->
+    <select id="findByPage" resultType="Group">
+        select id,name,tags,empcounts
+        from t_group
+        order by empcounts
+                 limit #{start},#{rows}
+    </select>
+
+
+    <!--查询总条数-->
+    <select id="findTotals" resultType="Integer">
+        select count(id) from t_group
+    </select>
+
+    <!--省份添加-->
+    <insert id="save" parameterType="Group" useGeneratedKeys="true" keyProperty="id">
+        insert into t_group values(#{id},#{name},#{tags},#{empcounts})
+    </insert>
+
+    <!--省份删除-->
+    <delete id="delete" parameterType="String">
+        DELETE from t_group where id = #{id}
+    </delete>
+
+    <!--查询一个-->
+    <select id="findOne" resultType="Group">
+        select id,name,tags,empcounts
+        from t_group
+        where id =#{id}
+    </select>
+
+    <!--修改省份信息方法-->
+    <update id="update" parameterType="Group">
+        update t_group set name=#{name},tags=#{tags},empcounts=#{empcounts}
+        where id=#{id}
+    </update>
+
+</mapper>

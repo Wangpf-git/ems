@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>add Emp</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href="../css/style1.css" rel="stylesheet"
+          type="text/css" />
+</head>
+<body>
+<div id="app">
+    <div id="wrap">
+        <div id="header">
+            <div style="float: right;padding-top: 24px">2020/10/26</div>
+            <h1>管理系统</h1>
+        </div>
+        <div id="header-bar"></div>
+        <div id="content" style="height: 360px">
+            <h2>添加部门</h2>
+            <form action="grouplist.html" method="post">
+                <label>
+                    <div class="label-text">部&emsp;门：</div>
+                    <input type="text" v-model="group.name">
+                </label>
+                <label>
+                    <div class="label-text">标&emsp;签：</div>
+                    <input type="text" v-model="group.tags">
+                </label>
+                <button @click="saveGroupInfo" type="button">提 交</button>&emsp;
+                <a href="grouplist.html">返回</a>
+            </form>
+        </div>
+        <div id="footer">
+            ABC@126.com
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script src="../js/vue.js"></script>
+<script src="../js/axios.min.js"></script>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            group:{}
+        },
+        methods:{
+            saveGroupInfo(){
+                axios.post("http://localhost:8989/ems_vue/group/save",this.group).then((res)=>{
+                   if(res.data.state;){
+                       alert(res.data.msg+",点击确定跳转到部门列表页面!");
+                       location.href='./grouplist.html';
+                   }else{
+                       alert(res.data.msg);
+                   }
+            })
+            }
+        }
+    });
+</script>
